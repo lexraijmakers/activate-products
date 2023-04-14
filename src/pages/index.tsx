@@ -1,22 +1,25 @@
+import { Selection } from '@test/components/Selection'
 import { useState } from 'react'
 import { OnResultFunction, QrReader } from 'react-qr-reader'
 
 export default function Home() {
     const [qrData, setQrData] = useState<string[]>([])
 
-    const handleScan: OnResultFunction = (result, error, codeReader) => {
-        console.log(codeReader)
-
+    const handleScan: OnResultFunction = (result) => {
         if (result) {
             const resultText = result?.getText()
             setQrData((prevData) =>
                 !prevData.includes(resultText) ? [...prevData, resultText] : prevData
             )
         }
+    }
 
-        if (error) {
-            console.error(error)
-        }
+    const handleDelete = (index: number) => {
+        setQrData((prevItems) => {
+            const updatedItems = [...prevItems]
+            updatedItems.splice(index, 1)
+            return updatedItems
+        })
     }
 
     return (
@@ -29,9 +32,7 @@ export default function Home() {
                 videoContainerStyle={{ width: '100%' }}
             />
 
-            {qrData.map((qr, index) => (
-                <li key={index}>{qr}</li>
-            ))}
+            <Selection key={qrData?.length} qrData={qrData} handleDelete={handleDelete} />
         </>
     )
 }
